@@ -1,7 +1,7 @@
 {
   "name": "backend",
   "version": "1.0.0",
-  "description": "",
+  "description": "App for executing money transactions between user's account",
   "main": "index.js",
   "type": "module",
   "scripts": {

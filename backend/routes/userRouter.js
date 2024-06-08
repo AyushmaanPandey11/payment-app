@@ -1,6 +1,6 @@
 import { Router } from "express";
 import zod from "zod";
-import { User } from "../db";
+import { Account, User } from "../db";
 import jwt from "jsonwebtoken";
 import { JWT_SECRET } from "../config";
 import { authMiddleware } from "../middleware";
@@ -32,7 +32,19 @@ userRouter.post("/signup", async (req,res)=> {
             message: "Email already taken"
         });
     }
-    const createdUser = await User.create(body);
+    const createdUser = await User.create({
+        username: body.username,
+        password: body.password,
+        firstName: body.firstName,
+        lastName: body.lastName
+    });
+
+    const userId = createdUser._id;
+    await Account.create({
+        userId,
+        balance: 1 + Math.random() * 10000
+    })
+
     const token = jwt.sign({
         userId: createdUser._id,
     },JWT_SECRET);
@@ -48,7 +60,7 @@ const signinBody = zod.object({
     password: zod.string()
 });
 
-userRouter.post("/singin", async (req,res)=> {
+userRouter.post("/signin", async (req,res)=> {
     const {success} = signinBody.safeParse(req.body);
     if(!success)
     {
