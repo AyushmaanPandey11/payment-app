@@ -1,9 +1,9 @@
 import { Router } from "express";
 import zod from "zod";
-import { Account, User } from "../db";
+import { Account, User } from "../db.js";
 import jwt from "jsonwebtoken";
-import { JWT_SECRET } from "../config";
-import { authMiddleware } from "../middleware";
+import { JWT_SECRET } from "../config.js";
+import { authMiddleware } from "../middleware.js";
 const userRouter = Router();
 
 
@@ -112,7 +112,7 @@ userRouter.put("/",authMiddleware, async (req,res) => {
     }
 });
 
-userRouter.get("/bulk",async(req,res)=> {
+userRouter.get("/bulk",authMiddleware,async(req,res)=> {
     const filter = req.query.filter || "";
     const users = await User.find({
         $or: [{

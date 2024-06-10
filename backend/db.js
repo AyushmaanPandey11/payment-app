@@ -1,6 +1,13 @@
 import mongoose, {Schema} from "mongoose";
 import bcrypt from "bcrypt";
-mongoose.connect("mongodb://localhost:27017/paymentApp");
+
+try{
+    const connectInstance= await mongoose.connect("mongodb://localhost:27017/paymentApp");
+    console.log(`DB Connection Succesfully !! DB HOST: ${connectInstance.connection.host}`)
+}catch(error){
+    console.log("MONGODB connection FAILED ", error);
+    process.exit(1)
+}
 
 const userSchema = new Schema({
     username: {
