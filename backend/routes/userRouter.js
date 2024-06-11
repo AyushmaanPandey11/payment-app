@@ -4,8 +4,10 @@ import { Account, User } from "../db.js";
 import jwt from "jsonwebtoken";
 import { JWT_SECRET } from "../config.js";
 import { authMiddleware } from "../middleware.js";
-const userRouter = Router();
+import bcrypt from "bcrypt";
 
+
+const userRouter = Router();
 
 const signupBody = zod.object({
     username: zod.string().email(),
@@ -26,27 +28,27 @@ userRouter.post("/signup", async (req,res)=> {
     const user = await User.findOne({
         username: body.username
     });
-    if(user._id)
+    if(user?._id)
     {
         return res.status(411).json({
             message: "Email already taken"
         });
     }
     const createdUser = await User.create({
-        username: body.username,
-        password: body.password,
-        firstName: body.firstName,
-        lastName: body.lastName
+        username: req.body.username,
+        password: req.body.password,
+        firstName: req.body.firstName,
+        lastName: req.body.lastName
     });
 
     const userId = createdUser._id;
     await Account.create({
         userId,
-        balance: 1 + Math.random() * 10000
+        balance: 1 + Math.random() * 1000
     })
 
     const token = jwt.sign({
-        userId: createdUser._id,
+        userId:  createdUser._id,
     },JWT_SECRET);
     res.status(200).json({
         message: "User Created Successfully",
@@ -60,32 +62,39 @@ const signinBody = zod.object({
     password: zod.string()
 });
 
-userRouter.post("/signin", async (req,res)=> {
-    const {success} = signinBody.safeParse(req.body);
-    if(!success)
-    {
-        return res.json({
-            message: "Invalid User input for signing in"
-        })    
+userRouter.post("/signin", async (req, res) => {
+    const { success, error } = signinBody.safeParse(req.body);
+    if (!success) {
+        return res.status(400).json({
+            message: "Invalid User input for signing in",
+            error: error.errors
+        });
     }
-    const user = await User.findOne({
-        username: req.body.username,
-        password: req.body.password
+    const user = await User.findOne({ 
+        username: req.body.username
     });
-    if(user){
-        const token = jwt.sign({
-            userId: user._id
-        },JWT_SECRET);
-        res.json({
-            token:token
-        })
-        return ;
+    if (user) {
+        const isPasswordValid =  await bcrypt.compare(req.body.password,user.password);
+        console.log(isPasswordValid);
+        if (isPasswordValid) {
+            const token = jwt.sign({
+                userId: user._id,
+            }, JWT_SECRET);
+            return res.json({
+                message: "Logged in Successfully",
+                token: token
+            });
+        } else {
+            return res.status(401).json({
+                message: "Invalid username or password"
+            });
+        }
+    } else {
+        return res.status(401).json({
+            message: "Invalid Username or password"
+        });
     }
-
-    return res.status(411).json({
-        message: "Error while loggin in"
-    });
-})
+});
 
 const updateBody = zod.object({
     password: zod.string().optional(),
@@ -127,7 +136,7 @@ userRouter.get("/bulk",authMiddleware,async(req,res)=> {
     });
     res.json({
         message: "Fetched successfully",
-        user: users.map((user)=> ({
+        users: users.map((user)=> ({
             username: user.username,
             firstName: user.firstName,
             lastName: user.lastName,

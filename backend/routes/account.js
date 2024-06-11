@@ -21,7 +21,7 @@ accRouter.get("/balance", authMiddleware,async ( req,res) => {
     });
 });
 
-accRouter.post("/transfer", authMiddleware ,async(req,res) => {
+accRouter.post("/transfer", authMiddleware , async(req,res) => {
     // starting the transaction session before the algorithm
     const session = await mongoose.startSession();
     session.startTransaction();
@@ -37,7 +37,7 @@ accRouter.post("/transfer", authMiddleware ,async(req,res) => {
     const toAccount = await Account.findOne({userId:to}).session(session);
     if(!toAccount)
     {
-        session.abortTransaction();
+        await session.abortTransaction();
         return res.status(400).json({
             message: "invalid account"
         });
