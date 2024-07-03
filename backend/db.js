@@ -2,7 +2,7 @@ import mongoose, {Schema} from "mongoose";
 import bcrypt from "bcrypt";
 
 try{
-    const connectInstance= await mongoose.connect("mongodb://localhost:27017/paymentApp");
+    const connectInstance= await mongoose.connect("mongodb+srv://ayushmaan1122pandey:krjzaV7IvtKzffo4@cluster0.t3pq8yr.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0");
     console.log(`DB Connection Succesfully !! DB HOST: ${connectInstance.connection.host}`)
 }catch(error){
     console.log("MONGODB connection FAILED ", error);
