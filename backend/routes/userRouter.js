@@ -62,11 +62,11 @@ const signinBody = zod.object({
     password: zod.string()
 });
 
-userRouter.post("/signin", async (req, res) => {
+userRouter.post("/signin" ,async (req, res) => {
     const { success, error } = signinBody.safeParse(req.body);
     if (!success) {
         return res.status(400).json({
-            message: "Invalid User input for signing in",
+            message: "Email already taken / Incorrect inputs",
             error: error.errors
         });
     }
@@ -74,7 +74,7 @@ userRouter.post("/signin", async (req, res) => {
         username: req.body.username
     });
     if (user) {
-        const isPasswordValid =  await bcrypt.compare(req.body.password,user.password);
+        const isPasswordValid =  await user.isPasswordCorrect(req.body.password);
         console.log(isPasswordValid);
         if (isPasswordValid) {
             const token = jwt.sign({
