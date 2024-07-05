@@ -75,7 +75,6 @@ userRouter.post("/signin" ,async (req, res) => {
     });
     if (user) {
         const isPasswordValid =  await user.isPasswordCorrect(req.body.password);
-        console.log(isPasswordValid);
         if (isPasswordValid) {
             const token = jwt.sign({
                 userId: user._id,
