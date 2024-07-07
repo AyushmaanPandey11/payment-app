@@ -6,14 +6,14 @@ import { SubHeading } from "../components/SubHeading"
 
 export const Signin = () => {
   return (
-    <div classNameName="bg-slate-300 h-screen flex justify-center">
-        <div classNameName="flex flex-col justify-center">
-            <div classNameName="rounded-lg bg-white w-80 text-center p-2 h-max px-4">
+    <div className="bg-slate-300 h-screen flex justify-center">
+        <div className="flex flex-col justify-center">
+            <div className="rounded-lg bg-white w-80 text-center p-2 h-max px-4">
                 <Heading label={"Sign In"}/>
                 <SubHeading label={"Enter your credentials to access your account"}/>
                 <InputBox  placeholder={"brucewayne@gmail.com"} label={"Email"} />
                 <InputBox  placeholder={"123456"} label={"Password"} />
-                <div classNameName="pt-4">
+                <div className="pt-4">
                     <Button  label={"Sign In"} />
                 </div>
                 <BottomWarning label={"Don't have an account?"} linkText={"Sign Up"} to={"/signup"}/>
