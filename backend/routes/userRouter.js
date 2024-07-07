@@ -123,13 +123,16 @@ userRouter.put("/",authMiddleware, async (req,res) => {
 userRouter.get("/bulk",authMiddleware,async(req,res)=> {
     const filter = req.query.filter || "";
     const users = await User.find({
+        _id: { $ne: req.userId },
         $or: [{
             firstName: {
-                "$regex" : filter
+                "$regex" : filter,
+                $options: "i"
             }
         },{
             lastName: {
-                "$regex" : filter
+                "$regex" : filter,
+                $options: "i"
             }
         }]
     });

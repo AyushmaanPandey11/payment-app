@@ -5,12 +5,15 @@ import { Heading } from "../components/Heading";
 import { InputBox } from "../components/InputBox";
 import { SubHeading } from "../components/SubHeading";
 import axios from "axios";
+import { BACKEND_URL } from "../utils/constants";
+import { useNavigate } from "react-router-dom";
+
 export const Signup = () => {
   const firstName = useRef("");
   const lastName = useRef("");
   const username = useRef("");
   const password = useRef("");
-
+  const navigate = useNavigate();
   const handleSignUp = async () => {
     const userData = {
       firstName : firstName.current.value,
@@ -18,8 +21,12 @@ export const Signup = () => {
       username: username.current.value,
       password: password.current.value
     };
-    const response = await axios.post("http://localhost:3000/api/v1/user/signup",userData);
+    const response = await axios.post(`${BACKEND_URL}/user/signup`,userData);
     localStorage.setItem("token",response.data.token);
+    if(response.status == 200)
+    {
+      navigate("/dashboard");
+    }
   };
 
   return (
